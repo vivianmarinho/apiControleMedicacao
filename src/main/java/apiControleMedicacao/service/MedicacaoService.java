@@ -145,7 +145,7 @@ public class MedicacaoService {
                         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
                         Message message = Message.creator(
                                         new PhoneNumber("whatsapp:" + medicamento.getUsuario().getTelefone()), // Número de telefone do destinatário
-                                        //new PhoneNumber("whatsapp:+556599192664"),
+
                                         new PhoneNumber("whatsapp:+14155238886"),
                                         medicamento.getUsuario().getNome() + " está na hora de tomar o remédio " + medicamento.getMedicamento().getMedicamentoNome() + " !" + "\n" +
                                                 "Para confirmar que tomou a medicação, acesse o link a seguir:" + "\n")
