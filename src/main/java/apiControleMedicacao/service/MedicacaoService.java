@@ -37,13 +37,10 @@ public class MedicacaoService {
     private JavaMailSender mailSender;
 
 
-
-
-
     public Medicacao realizarRegistroMedicacao(Medicacao medicacao) {
 
-            medicacao.setUsuario(usuarioService.buscarUsuarioPorId(medicacao.getUsuario().getId()));
-            medicacao.setMedicamento(medicamentoService.buscarMedicamentoPorId(medicacao.getMedicamento().getId()));
+        medicacao.setUsuario(usuarioService.buscarUsuarioPorId(medicacao.getUsuario().getId()));
+        medicacao.setMedicamento(medicamentoService.buscarMedicamentoPorId(medicacao.getMedicamento().getId()));
 
         if (medicacao.getUsuario() == null) {
             return null;
@@ -64,16 +61,16 @@ public class MedicacaoService {
         }
 
         if (medicacao.getHoraInicio() == null) {
-                System.out.println("O usuário deve informar a hora");
-                return null;
+            System.out.println("O usuário deve informar a hora");
+            return null;
         }
-            LocalDateTime dataHoraUltimaDose = LocalDateTime.of(medicacao.getDataFim(), medicacao.getHoraInicio());
-            LocalDateTime dataHoraPrimeiraDose = LocalDateTime.of(medicacao.getDataInicio(), medicacao.getHoraInicio());
-            LocalDate data = LocalDate.of(medicacao.getDataInicio().getYear(), medicacao.getDataInicio().getMonth(), medicacao.getDataInicio().getDayOfMonth());
-            LocalDate dataFim = LocalDate.of(medicacao.getDataFim().getYear(), medicacao.getDataFim().getMonth(), medicacao.getDataFim().getDayOfMonth());
+        LocalDateTime dataHoraUltimaDose = LocalDateTime.of(medicacao.getDataFim(), medicacao.getHoraInicio());
+        LocalDateTime dataHoraPrimeiraDose = LocalDateTime.of(medicacao.getDataInicio(), medicacao.getHoraInicio());
+        LocalDate data = LocalDate.of(medicacao.getDataInicio().getYear(), medicacao.getDataInicio().getMonth(), medicacao.getDataInicio().getDayOfMonth());
+        LocalDate dataFim = LocalDate.of(medicacao.getDataFim().getYear(), medicacao.getDataFim().getMonth(), medicacao.getDataFim().getDayOfMonth());
 
 
-           medicacao = medicacaoRepository.save(medicacao);
+        medicacao = medicacaoRepository.save(medicacao);
 
         // String enviarEmail = registro.getPessoa().getEmail();
 
@@ -92,13 +89,13 @@ public class MedicacaoService {
         //geraHorarioNotificacao(dataHoraPrimeiraDose, registro.getDataFim(),
         //registro.getMedicacao().getIntervalo(), registro.getIdRegistro());
 
-           return medicacao;
+        return medicacao;
     }
 
 
     // Inserindo os registros
-    public Medicacao adicionarRegistroMedicacao (Medicacao medicacao){
-        return  medicacaoRepository.save(medicacao);
+    public Medicacao adicionarRegistroMedicacao(Medicacao medicacao) {
+        return medicacaoRepository.save(medicacao);
     }
 
     private List<LocalDateTime> geraHorarioNotificacao(LocalDateTime dataHoraPrimeiraDose, Medicacao medicamento) {
@@ -131,6 +128,7 @@ public class MedicacaoService {
 
         Timer timer = new Timer();
 
+
         timer.scheduleAtFixedRate(new TimerTask() {
             public static final String ACCOUNT_SID = "AC4e803c96c60b36d0ffcba0fce34c20ad";
             public static final String AUTH_TOKEN = "1008d8d7ada9e77f5d337af3fd595c99";
@@ -140,22 +138,21 @@ public class MedicacaoService {
                 for (LocalDateTime hora : diaHorarioNotificacao) {
                     horaAtual = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 
-                    if (horaAtual.equals(hora)) {
+                        if(horaAtual.equals(hora)){
+                            Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+                            Message message = Message.creator(
+                                            new PhoneNumber("whatsapp:" + medicamento.getUsuario().getTelefone()), // Número de telefone do destinatário
 
-                        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-                        Message message = Message.creator(
-                                        new PhoneNumber("whatsapp:" + medicamento.getUsuario().getTelefone()), // Número de telefone do destinatário
+                                            new PhoneNumber("whatsapp:+14155238886"),
+                                            medicamento.getUsuario().getNome() + " está na hora de tomar o remédio " + medicamento.getMedicamento().getMedicamentoNome() + " !" + "\n" +
+                                                    "Para confirmar que tomou a medicação, acesse o link a seguir:" + "\n")
 
-                                        new PhoneNumber("whatsapp:+14155238886"),
-                                        medicamento.getUsuario().getNome() + " está na hora de tomar o remédio " + medicamento.getMedicamento().getMedicamentoNome() + " !" + "\n" +
-                                                "Para confirmar que tomou a medicação, acesse o link a seguir:" + "\n")
+                                    .create();
 
-                                .create();
+                            System.out.println(message.getSid());
 
-                        System.out.println(message.getSid());
+                        }
 
-
-                    }
 
                 }
             }
@@ -181,7 +178,6 @@ public class MedicacaoService {
         // return String.format("%04d", (int) (Math.random() * 10000));
         return "http://127.0.0.1:5500/index.html";
     }
-
-
 }
+
 
