@@ -5,17 +5,23 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.List;
+
 @Entity(name = "usuario")
 @Table(name="usuario", schema = "public")
 @Getter
 @Setter
 @Data
 
-public class Usuario {
+public class Usuario  {
+
+
 
     @Id @GeneratedValue (strategy = GenerationType.AUTO)
     @Column(name = "usuario_id")
-    private  Long id;
+    private  Long idUsuario;
     @Column (name = "usuario_cpf")
     private String cpf;
     @Column (name = "usuario_nome")
@@ -26,5 +32,9 @@ public class Usuario {
     private String telefone;
     @Column (name = "usuario_senha")
     private String senha;
+
+
+    ///@OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    //private List<Medicacao> medicacaos;
 
 }

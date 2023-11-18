@@ -1,11 +1,13 @@
 package apiControleMedicacao.service;
 
+import apiControleMedicacao.model.Medicacao;
 import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,6 +18,7 @@ public class UsuarioService {
     public Usuario adicionarUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
+
 
     public Usuario buscarUsuarioPorId(Long id) {
         // Verifique se o ID não é nulo antes de realizar a consulta no banco de dados

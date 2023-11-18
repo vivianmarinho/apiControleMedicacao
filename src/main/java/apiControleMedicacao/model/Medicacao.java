@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -14,19 +16,22 @@ import java.time.LocalTime;
 @Entity(name = "medicacao")
 @Getter
 @Setter
-public class Medicacao {
+public class Medicacao  {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "medicacao_id")
-    private long id;
+    private long idMedicacao;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "usuario_id", nullable = true)
+    //@ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "usuario_id", nullable = true)
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "medicamento_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "medicamento_id")
     private Medicamento medicamento;
 
     @JsonFormat(pattern = "dd-MM-yyy")

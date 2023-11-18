@@ -2,6 +2,8 @@ package apiControleMedicacao.service;
 
 
 import apiControleMedicacao.model.Medicacao;
+import apiControleMedicacao.model.MedicacaoNotificacao;
+import apiControleMedicacao.repository.MedicacaoNotificacaoRepository;
 import apiControleMedicacao.repository.MedicacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -39,7 +41,7 @@ public class MedicacaoService {
 
     public Medicacao realizarRegistroMedicacao(Medicacao medicacao) {
 
-        medicacao.setUsuario(usuarioService.buscarUsuarioPorId(medicacao.getUsuario().getId()));
+        medicacao.setUsuario(usuarioService.buscarUsuarioPorId(medicacao.getUsuario().getIdUsuario()));
         medicacao.setMedicamento(medicamentoService.buscarMedicamentoPorId(medicacao.getMedicamento().getId()));
 
         if (medicacao.getUsuario() == null) {
@@ -99,7 +101,7 @@ public class MedicacaoService {
     }
 
     private List<LocalDateTime> geraHorarioNotificacao(LocalDateTime dataHoraPrimeiraDose, Medicacao medicamento) {
-        medicamento.setUsuario(usuarioService.buscarUsuarioPorId(medicamento.getUsuario().getId()));
+        medicamento.setUsuario(usuarioService.buscarUsuarioPorId(medicamento.getUsuario().getIdUsuario()));
         medicamento.setMedicamento(medicamentoService.buscarMedicamentoPorId(medicamento.getMedicamento().getId()));
 
         LocalDateTime dataHoraUltimodia = LocalDateTime.of(medicamento.getDataFim(), LocalTime.of(23, 59));
@@ -119,39 +121,52 @@ public class MedicacaoService {
         diaHorarioNotificacao.add(dataHoraPrimeiraDose);
         LocalDateTime auxiliar;
 
+
         for (int k = 0; k < numeroDeIntervalos; k++) {
             auxiliar = diaHorarioNotificacao.get(diaHorarioNotificacao.size() - 1);
             LocalDateTime HorarioSalvar = auxiliar.plusSeconds(totalSegundos);
             diaHorarioNotificacao.add(HorarioSalvar);
-
         }
+
+        MedicacaoNotificacao medicacaoNotificacao = new MedicacaoNotificacao();
+        medicacaoNotificacao.setDiahoraNotificacao(diaHorarioNotificacao);
+
 
         Timer timer = new Timer();
 
 
         timer.scheduleAtFixedRate(new TimerTask() {
             public static final String ACCOUNT_SID = "AC4e803c96c60b36d0ffcba0fce34c20ad";
-            public static final String AUTH_TOKEN = "1008d8d7ada9e77f5d337af3fd595c99";
+            public static final String AUTH_TOKEN = "0ded990270eea846305f48b6fe732523";
+            // "1008d8d7ada9e77f5d337af3fd595c99";
 
             public void run() {
                 LocalDateTime horaAtual = LocalDateTime.now();
                 for (LocalDateTime hora : diaHorarioNotificacao) {
                     horaAtual = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 
-                        if(horaAtual.equals(hora)){
-                            Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-                            Message message = Message.creator(
-                                            new PhoneNumber("whatsapp:" + medicamento.getUsuario().getTelefone()), // Número de telefone do destinatário
 
-                                            new PhoneNumber("whatsapp:+14155238886"),
-                                            medicamento.getUsuario().getNome() + " está na hora de tomar o remédio " + medicamento.getMedicamento().getMedicamentoNome() + " !" + "\n" +
-                                                    "Para confirmar que tomou a medicação, acesse o link a seguir:" + "\n")
+                    // Prestar atenção porque a comparação é feita de DIA e HORA
+                    if (horaAtual.equals(hora)) {
+                        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
-                                    .create();
 
-                            System.out.println(message.getSid());
+                        String audioUrl = "URL_DO_SEU_AUDIO";
 
-                        }
+                        Message message = Message.creator(
+                                        new PhoneNumber("whatsapp:+55" + medicamento.getUsuario().getTelefone()), // Número de telefone do destinatário
+                                        // new PhoneNumber("whatsapp:+5565996135666"),
+                                        new PhoneNumber("whatsapp:+14155238886"),
+
+                                        medicamento.getUsuario().getNome() + " está na hora de tomar o remédio " + medicamento.getMedicamento().getMedicamentoNome() + " !" + "\n" +
+                                                "Para confirmar que tomou a medicação, acesse o link a seguir:" + "\n")
+
+                                .create();
+
+                        System.out.println(message.getSid());
+
+
+                    }
 
 
                 }
@@ -166,18 +181,7 @@ public class MedicacaoService {
 
     }
 
-    private static String gerarCodigoConfirmacao() {
-        // Gere um UUID (identificador único) como código de confirmação
-        return UUID.randomUUID().toString();
-    }
 
-    private static String construirLinkConfirmacao(String confirmacao) {
-        // Lógica para gerar um código de confirmação aleatório
-        // Neste exemplo, estamos usando um código simples de 4 dígitos
-        //
-        // return String.format("%04d", (int) (Math.random() * 10000));
-        return "http://127.0.0.1:5500/index.html";
-    }
 }
 
 
