@@ -3,6 +3,7 @@ package apiControleMedicacao.service;
 
 import apiControleMedicacao.model.Medicacao;
 import apiControleMedicacao.model.MedicacaoNotificacao;
+import apiControleMedicacao.model.Medicamento;
 import apiControleMedicacao.repository.MedicacaoNotificacaoRepository;
 import apiControleMedicacao.repository.MedicacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ public class MedicacaoService {
 
 
     public Medicacao realizarRegistroMedicacao(Medicacao medicacao) {
+
 
         medicacao.setUsuario(usuarioService.buscarUsuarioPorId(medicacao.getUsuario().getIdUsuario()));
         medicacao.setMedicamento(medicamentoService.buscarMedicamentoPorId(medicacao.getMedicamento().getId()));
@@ -128,8 +130,8 @@ public class MedicacaoService {
             diaHorarioNotificacao.add(HorarioSalvar);
         }
 
-        MedicacaoNotificacao medicacaoNotificacao = new MedicacaoNotificacao();
-        medicacaoNotificacao.setDiahoraNotificacao(diaHorarioNotificacao);
+        //MedicacaoNotificacao medicacaoNotificacao = new MedicacaoNotificacao();
+        //medicacaoNotificacao.setDiahoraNotificacao(diaHorarioNotificacao);
 
 
         Timer timer = new Timer();
@@ -146,8 +148,12 @@ public class MedicacaoService {
                     horaAtual = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 
 
+
                     // Prestar atenção porque a comparação é feita de DIA e HORA
                     if (horaAtual.equals(hora)) {
+
+                        diminuirQuantidadeMedicamento(medicamento);
+
                         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
 
@@ -181,7 +187,42 @@ public class MedicacaoService {
 
     }
 
+    public Medicacao diminuirQuantidadeMedicamento(Medicacao medicacao) {
+        int quantidadeAtual = Integer.parseInt(medicacao.getQuantidade());
+
+        if (quantidadeAtual > 0) {
+            int novaQuantidade = quantidadeAtual - 1;
+            medicacao.setQuantidade(String.valueOf(novaQuantidade));
+            Medicacao medicacaoAtualizada = medicacaoRepository.save(medicacao);
+
+            // Verifica se a quantidade é menor ou igual a 3 para enviar notificação
+            if (novaQuantidade <= 3) {
+                enviarNotificacao(medicacao); // Chama o método para enviar notificação
+            }
+
+            return medicacaoAtualizada;
+        } else {
+            // Lógica para tratar quando a quantidade é zero ou negativa
+            return medicacao;
+        }
+    }
+
+    private void enviarNotificacao(Medicacao medicacao) {
+
+         String enviarEmail = medicacao.getUsuario().getEmail();
+
+        var mensagem = new SimpleMailMessage();
+        mensagem.setTo(medicacao.getUsuario().getEmail());
+        mensagem.setSubject("ATENÇÃO!");
+        mensagem.setText("A sua medicação está quase acabando, favor validar a reposição " + medicacao.getMedicamento().getMedicamentoNome() + medicacao.getQuantidade());
+
+        mailSender.send(mensagem);
+    }
+
 
 }
+
+
+
 
 

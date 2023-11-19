@@ -1,6 +1,8 @@
 package apiControleMedicacao.service;
 
+import apiControleMedicacao.model.Medicacao;
 import apiControleMedicacao.model.Medicamento;
+import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.repository.MedicamentoRepository;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ public class MedicamentoService {
         public Medicamento adicionarMedicamento(Medicamento medicamento) {
             return medicamentoRepository.save(medicamento);
         }
+
+
 
         public Medicamento buscarMedicamentoPorId(Long id) {
             if (id == null) {

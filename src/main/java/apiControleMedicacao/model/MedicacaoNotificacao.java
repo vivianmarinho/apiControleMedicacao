@@ -37,9 +37,11 @@ public class MedicacaoNotificacao  {
     private Medicacao medicacao;
 
 
-    public void getDiahoraNotificacao(List<LocalDateTime> diaHorarioNotificacao) {
-    }
 
-    public void setDiahoraNotificacao(List<LocalDateTime> diaHorarioNotificacao) {
-    }
+    //@Column(name = "dia_hora_notificacao")
+    //List<LocalDateTime> diaHorarioNotificacao;
+
+    //public List<LocalDateTime> setDiahoraNotificacao(List<LocalDateTime> diaHorarioNotificacao) {
+      //  return diaHorarioNotificacao;
+    //}
 }
