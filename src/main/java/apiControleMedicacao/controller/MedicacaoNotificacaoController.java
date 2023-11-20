@@ -2,6 +2,7 @@ package apiControleMedicacao.controller;
 
 import apiControleMedicacao.model.MedicacaoNotificacao;
 import apiControleMedicacao.service.MedicacaoNotificacaoService;
+import apiControleMedicacao.service.MedicacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,13 @@ public class MedicacaoNotificacaoController {
 
     @Autowired
     private MedicacaoNotificacaoService medicacaoNotificacaoService;
+
+    @Autowired
+    private MedicacaoService medicacaoService;
+
+    public ResponseEntity<MedicacaoNotificacao> realizarRegistroMedicacaoNotificacao(@RequestBody MedicacaoNotificacao medicacaoNotificacao){
+        return ResponseEntity.status(HttpStatus.CREATED).body(medicacaoNotificacaoService.salvarMedicacaoNotificacao(medicacaoNotificacao));
+    }
 
     public ResponseEntity<MedicacaoNotificacao> salvarMedicacaoNotificacao(@RequestBody MedicacaoNotificacao medicacaoNotificacao){
         return ResponseEntity.status(HttpStatus.CREATED).body(medicacaoNotificacaoService.salvarMedicacaoNotificacao(medicacaoNotificacao));

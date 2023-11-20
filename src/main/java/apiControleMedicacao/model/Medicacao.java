@@ -16,22 +16,23 @@ import java.time.LocalTime;
 @Entity(name = "medicacao")
 @Getter
 @Setter
-public class Medicacao  {
+public class Medicacao  implements Serializable{
 
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "medicacao_id")
     private long idMedicacao;
 
-    //@ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "usuario_id", nullable = true)
-    @JoinColumn(name = "usuario_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+   // @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = true)
+   // @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medicamento_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "medicamento_id", nullable = true)
     private Medicamento medicamento;
 
     @JsonFormat(pattern = "dd-MM-yyy")
@@ -52,9 +53,5 @@ public class Medicacao  {
     @DateTimeFormat(pattern = "HH:mm")
     @Column (name = "medicacao_intervalo")
     private LocalTime intervalo;
-
-
-
-
 
 }

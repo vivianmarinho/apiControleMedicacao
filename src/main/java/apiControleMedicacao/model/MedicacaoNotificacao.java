@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity(name = "medicacao_notificacao")
@@ -12,15 +13,15 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Data
-public class MedicacaoNotificacao  {
+public class MedicacaoNotificacao  implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "medicacao_notificacao_id")
     private  Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "usuario_id", nullable = true)
     @JoinColumn(name = "medicacao_id")
     private Medicacao medicacao;
 
@@ -32,13 +33,6 @@ public class MedicacaoNotificacao  {
 
     @Column(name = "medicacao_tomada")
     private String medicacaoTomada;
-
-
-
-
-
-    //@Column(name = "dia_hora_notificacao")
-    //List<LocalDateTime> diaHorarioNotificacao;
 
 
 }

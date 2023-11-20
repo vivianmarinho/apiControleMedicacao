@@ -1,7 +1,6 @@
 package apiControleMedicacao.controller;
 
 import apiControleMedicacao.model.Medicamento;
-import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.service.MedicamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -3,7 +3,6 @@ package apiControleMedicacao.service;
 
 import apiControleMedicacao.model.Medicacao;
 import apiControleMedicacao.model.MedicacaoNotificacao;
-import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.repository.MedicacaoNotificacaoRepository;
 import apiControleMedicacao.repository.MedicacaoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,13 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
-
-
-import java.net.URI;
-import java.math.BigDecimal;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -28,7 +20,7 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 
-import javax.print.attribute.standard.Media;
+
 
 @Service
 public class MedicacaoService {
@@ -40,6 +32,7 @@ public class MedicacaoService {
 
     @Autowired
     private MedicacaoNotificacaoRepository medicacaoNotificacaoRepository;
+
 
     @Autowired
     private UsuarioService usuarioService;
@@ -81,15 +74,17 @@ public class MedicacaoService {
         LocalDate data = LocalDate.of(medicacao.getDataInicio().getYear(), medicacao.getDataInicio().getMonth(), medicacao.getDataInicio().getDayOfMonth());
         LocalDate dataFim = LocalDate.of(medicacao.getDataFim().getYear(), medicacao.getDataFim().getMonth(), medicacao.getDataFim().getDayOfMonth());
 
+        /*if (dataHoraPrimeiraDose.isAfter(LocalDateTime.now())) {
+            medicacao.setStatusUsuarioMedicacao("AGENDADO");
+        } else {
+            medicacao.setStatusPessoaMedicacao("CONSUMINDO");
+        }*/
 
         medicacao = medicacaoRepository.save(medicacao);
 
         List<LocalDateTime> horarioGerado = geraHorarioNotificacao(dataHoraPrimeiraDose, medicacao);
 
         return medicacao;
-
-
-
     }
 
 
@@ -119,6 +114,8 @@ public class MedicacaoService {
         diaHorarioNotificacao.add(dataHoraPrimeiraDose);
         LocalDateTime auxiliar;
 
+        // Validando os horarios das notificações
+        // SALVANDO NA TABELA MEDICACAO_NOTIFICACAO
 
         for (int k = 0; k < numeroDeIntervalos; k++) {
             auxiliar = diaHorarioNotificacao.get(diaHorarioNotificacao.size() - 1);
@@ -126,6 +123,15 @@ public class MedicacaoService {
             diaHorarioNotificacao.add(HorarioSalvar);
             MedicacaoNotificacao medicacaoNotificacao = new MedicacaoNotificacao();
             medicacaoNotificacao.setDiahoraNotificacao(HorarioSalvar);
+            LocalDateTime horario = LocalDateTime.now();
+            if(medicacaoNotificacao.getDiahoraNotificacao() == horario){
+                medicacaoNotificacao.setStatusHoraMedicacao("Consumindo");
+            }else if (medicacaoNotificacao.getDiahoraNotificacao().isAfter(horario)){
+                medicacaoNotificacao.setStatusHoraMedicacao("Agendado");
+            }else if (medicacaoNotificacao.getDiahoraNotificacao().isBefore(horario)) {
+                medicacaoNotificacao.setStatusHoraMedicacao("Consumido");
+            }
+
             medicacaoNotificacaoRepository.save(medicacaoNotificacao);
 
         }
@@ -215,7 +221,7 @@ public class MedicacaoService {
         var mensagem = new SimpleMailMessage();
         mensagem.setTo(medicacao.getUsuario().getEmail());
         mensagem.setSubject("ATENÇÃO!");
-        mensagem.setText("A sua medicação está quase acabando, se necessario repor " + medicacao.getMedicamento().getMedicamentoNome() + medicacao.getQuantidade());
+        mensagem.setText("A sua medicação está quase acabando, se necessario repor " + medicacao.getMedicamento().getMedicamentoNome() + "restam apenas " + medicacao.getQuantidade());
 
         mailSender.send(mensagem);
     }
@@ -231,25 +237,20 @@ public class MedicacaoService {
 
             medicacaoRepository.deleteById(id);
         } else {
-            throw new EntityNotFoundException("Usuário não encontrado com o ID: " + id);
+            throw new EntityNotFoundException("Registro não encontrado com o ID: " + id);
         }
         return null;
     }
 
-    public Medicacao bucarMedicacaoPorId(Long id) {
-        // Verifique se o ID não é nulo antes de realizar a exclusão
+    public Medicacao buscarMedicacaoPorId(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("O ID do usuário não pode ser nulo.");
         }
-        Optional<Medicacao> medicacaoOptional = medicacaoRepository.findById(id);
 
-        if (medicacaoOptional.isPresent()) {
-            medicacaoRepository.deleteById(id);
-        } else {
-            throw new EntityNotFoundException("Usuário não encontrado com o ID: " + id);
-        }
-        return null;
+        return medicacaoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Medicação não encontrada com o ID: " + id));
     }
+
 
 }
 
