@@ -24,8 +24,14 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.adicionarUsuario(usuario));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Usuario>buscarUsuarioPorId(@PathVariable Long id){
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Usuario> deletarUsuario(@PathVariable Long id){
+        usuarioService.deletarUsuarioPorId(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/buscarPorId/{id}")
+    public ResponseEntity<Usuario>buscarUsuarioPorNome(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarUsuarioPorId(id));
     }
 

@@ -1,5 +1,6 @@
 package apiControleMedicacao.repository;
 
+import apiControleMedicacao.model.Medicacao;
 import apiControleMedicacao.model.MedicacaoNotificacao;
 import apiControleMedicacao.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;

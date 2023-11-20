@@ -1,6 +1,8 @@
 package apiControleMedicacao.controller;
 
 import apiControleMedicacao.model.Medicacao;
+import apiControleMedicacao.model.Medicamento;
+import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.service.MedicacaoService;
 import apiControleMedicacao.service.MedicamentoService;
 import apiControleMedicacao.service.UsuarioService;
@@ -29,5 +31,15 @@ public class MedicacaoController {
         return ResponseEntity.status(HttpStatus.OK).body(medicacaoService.realizarRegistroMedicacao(medicacao));
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Medicacao> deletarMedicacao(@PathVariable Long id){
+        medicacaoService.deletarMedicacaoPorId(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/buscarPorId/{id}")
+    public ResponseEntity<Medicacao>buscarUsuarioPorId(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(medicacaoService.bucarMedicacaoPorId(id));
+    }
 
 }

@@ -15,7 +15,6 @@ public class MedicacaoNotificacaoController {
     @Autowired
     private MedicacaoNotificacaoService medicacaoNotificacaoService;
 
-
     public ResponseEntity<MedicacaoNotificacao> salvarMedicacaoNotificacao(@RequestBody MedicacaoNotificacao medicacaoNotificacao){
         return ResponseEntity.status(HttpStatus.CREATED).body(medicacaoNotificacaoService.salvarMedicacaoNotificacao(medicacaoNotificacao));
     }

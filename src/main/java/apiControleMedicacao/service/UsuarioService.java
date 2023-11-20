@@ -19,6 +19,21 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    public Usuario deletarUsuarioPorId(Long id) {
+        // Verifique se o ID não é nulo antes de realizar a exclusão
+        if (id == null) {
+            throw new IllegalArgumentException("O ID do usuário não pode ser nulo.");
+        }
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+
+        if (usuarioOptional.isPresent()) {
+            usuarioRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException("Usuário não encontrado com o ID: " + id);
+        }
+        return null;
+    }
+
 
     public Usuario buscarUsuarioPorId(Long id) {
         // Verifique se o ID não é nulo antes de realizar a consulta no banco de dados

@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 
 @Entity(name = "medicacao_notificacao")
 @Table(name="medicacao_notificacao", schema = "public")
@@ -20,11 +18,14 @@ public class MedicacaoNotificacao  {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "medicacao_notificacao_id")
     private  Long id;
-    //@Column(name = "data_notificacao")
-    //private LocalDate dataNotificacao;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "usuario_id", nullable = true)
+    @JoinColumn(name = "medicacao_id")
+    private Medicacao medicacao;
 
     @Column(name = "dia_hora_notificacao")
-    private LocalTime DiahoraNotificacao;
+    private LocalDateTime DiahoraNotificacao;
 
     @Column(name = "status_hora_medicacao")
     private String statusHoraMedicacao;
@@ -32,16 +33,12 @@ public class MedicacaoNotificacao  {
     @Column(name = "medicacao_tomada")
     private String medicacaoTomada;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "medicacao_id", nullable = true)
-    private Medicacao medicacao;
+
 
 
 
     //@Column(name = "dia_hora_notificacao")
     //List<LocalDateTime> diaHorarioNotificacao;
 
-    //public List<LocalDateTime> setDiahoraNotificacao(List<LocalDateTime> diaHorarioNotificacao) {
-      //  return diaHorarioNotificacao;
-    //}
+
 }
