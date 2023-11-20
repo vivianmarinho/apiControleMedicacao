@@ -22,9 +22,6 @@ public class Medicamento implements Serializable {
     private long id;
     @Column(name = "medicamento_nome")
     private String medicamentoNome;
-
-
-
     //@OneToMany(mappedBy = "medicamento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-   // private List<Medicacao> medicacaos;
+    //private List<Medicacao> medicacaos;
 }

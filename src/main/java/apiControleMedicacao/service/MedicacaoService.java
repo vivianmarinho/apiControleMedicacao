@@ -124,13 +124,16 @@ public class MedicacaoService {
             MedicacaoNotificacao medicacaoNotificacao = new MedicacaoNotificacao();
             medicacaoNotificacao.setDiahoraNotificacao(HorarioSalvar);
             LocalDateTime horario = LocalDateTime.now();
-            if(medicacaoNotificacao.getDiahoraNotificacao() == horario){
+            if (medicacaoNotificacao.getDiahoraNotificacao() == horario) {
                 medicacaoNotificacao.setStatusHoraMedicacao("Consumindo");
-            }else if (medicacaoNotificacao.getDiahoraNotificacao().isAfter(horario)){
+            } else if (medicacaoNotificacao.getDiahoraNotificacao().isAfter(horario)) {
                 medicacaoNotificacao.setStatusHoraMedicacao("Agendado");
-            }else if (medicacaoNotificacao.getDiahoraNotificacao().isBefore(horario)) {
+            } else if (medicacaoNotificacao.getDiahoraNotificacao().isBefore(horario)) {
                 medicacaoNotificacao.setStatusHoraMedicacao("Consumido");
             }
+
+            Medicacao medicacao = buscarMedicacaoPorId(medicamento.getIdMedicacao());
+            medicacaoNotificacao.setMedicacao(medicacao);
 
             medicacaoNotificacaoRepository.save(medicacaoNotificacao);
 
@@ -152,7 +155,6 @@ public class MedicacaoService {
                 LocalDateTime horaAtual = LocalDateTime.now();
                 for (LocalDateTime hora : diaHorarioNotificacao) {
                     horaAtual = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-
 
 
                     // Prestar atenção porque a comparação é feita de DIA e HORA
@@ -190,8 +192,6 @@ public class MedicacaoService {
         return diaHorarioNotificacao;
 
 
-
-
     }
 
     public Medicacao diminuirQuantidadeMedicamento(Medicacao medicacao) {
@@ -216,7 +216,7 @@ public class MedicacaoService {
 
     private void enviarNotificacao(Medicacao medicacao) {
 
-         String enviarEmail = medicacao.getUsuario().getEmail();
+        String enviarEmail = medicacao.getUsuario().getEmail();
 
         var mensagem = new SimpleMailMessage();
         mensagem.setTo(medicacao.getUsuario().getEmail());
@@ -250,6 +250,8 @@ public class MedicacaoService {
         return medicacaoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Medicação não encontrada com o ID: " + id));
     }
+
+
 
 
 }
