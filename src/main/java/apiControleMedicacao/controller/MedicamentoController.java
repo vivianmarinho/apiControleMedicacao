@@ -14,6 +14,7 @@ public class MedicamentoController {
     @Autowired
     private MedicamentoService medicamentoService;
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping
     public ResponseEntity<Medicamento> adicionarMedicamento(@RequestBody Medicamento medicamento){
         return ResponseEntity.status(HttpStatus.CREATED).body(medicamentoService.adicionarMedicamento(medicamento));

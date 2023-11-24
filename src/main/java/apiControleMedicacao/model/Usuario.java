@@ -1,21 +1,25 @@
 package apiControleMedicacao.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.List;
+
+import java.util.Collection;
+import java.util.Collections;
+
 
 @Entity(name = "usuario")
 @Table(name="usuario", schema = "public")
 @Getter
 @Setter
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode (of = "idUsuario")
 
-public class Usuario  implements Serializable{
+public class Usuario  implements UserDetails{
 
     private static final long serialVersionUID = 1L;
 
@@ -23,6 +27,7 @@ public class Usuario  implements Serializable{
     @Id @GeneratedValue (strategy = GenerationType.AUTO)
     @Column(name = "usuario_id")
     private  Long idUsuario;
+
     @Column (name = "usuario_cpf")
     private String cpf;
     @Column (name = "usuario_nome")
@@ -34,8 +39,51 @@ public class Usuario  implements Serializable{
     @Column (name = "usuario_senha")
     private String senha;
 
+    public Usuario(String cpf,String senha, String nome, String email, String telefone){
+        this.cpf=cpf;
+        this.senha=senha;
+        this.nome=nome;
+        this.email=email;
+        this.telefone=telefone;
+    }
 
-   /// @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return cpf;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+    /// @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     //private List<Medicacao> medicacaos;
 
 }

@@ -7,6 +7,8 @@ import apiControleMedicacao.repository.MedicamentoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,6 +18,9 @@ public class MedicamentoService {
 
         @Autowired
         private MedicamentoRepository medicamentoRepository;
+
+        @Autowired
+        private AuthenticationManager authenticationManager;
 
         public Medicamento adicionarMedicamento(Medicamento medicamento) {
             return medicamentoRepository.save(medicamento);

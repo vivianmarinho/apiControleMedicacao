@@ -84,6 +84,7 @@ public class MedicacaoService {
 
         List<LocalDateTime> horarioGerado = geraHorarioNotificacao(dataHoraPrimeiraDose, medicacao);
 
+
         return medicacao;
     }
 
@@ -135,6 +136,8 @@ public class MedicacaoService {
             Medicacao medicacao = buscarMedicacaoPorId(medicamento.getIdMedicacao());
             medicacaoNotificacao.setMedicacao(medicacao);
 
+
+
             medicacaoNotificacaoRepository.save(medicacaoNotificacao);
 
         }
@@ -163,6 +166,7 @@ public class MedicacaoService {
                         diminuirQuantidadeMedicamento(medicamento);
 
                         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+
 
                         String audioUrl = "apiControleMedicacao.audio.HoraDeTomarAMedicacao";
 
@@ -255,6 +259,7 @@ public class MedicacaoService {
 
 
 }
+
 
 
 

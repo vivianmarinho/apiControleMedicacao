@@ -2,6 +2,7 @@ package apiControleMedicacao.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,11 +36,13 @@ public class Medicacao  implements Serializable{
     @JoinColumn(name = "medicamento_id", nullable = true)
     private Medicamento medicamento;
 
-    @JsonFormat(pattern = "dd-MM-yyy")
+    //@JsonFormat(pattern = "dd-MM-yyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "medicacao_data_inicio")
     private LocalDate dataInicio;
 
-    @JsonFormat(pattern = "dd-MM-yyy")
+    //@JsonFormat(pattern = "dd-MM-yyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "medicacao_data_fim")
     private LocalDate dataFim;
 
@@ -53,5 +56,8 @@ public class Medicacao  implements Serializable{
     @DateTimeFormat(pattern = "HH:mm")
     @Column (name = "medicacao_intervalo")
     private LocalTime intervalo;
+
+
+
 
 }

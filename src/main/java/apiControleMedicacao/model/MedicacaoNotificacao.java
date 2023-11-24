@@ -32,7 +32,7 @@ public class MedicacaoNotificacao  implements Serializable {
     private String statusHoraMedicacao;
 
     @Column(name = "medicacao_tomada")
-    private String medicacaoTomada;
+    private Boolean medicacaoTomada;
 
 
 }
