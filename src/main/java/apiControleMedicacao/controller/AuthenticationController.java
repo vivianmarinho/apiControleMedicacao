@@ -29,8 +29,10 @@ public class AuthenticationController {
     TokenService tokenService;
 
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping("/usuario")
     public ResponseEntity login(@RequestBody @Validated AuthenticationDTO data){
+
         if (data.cpf() == null || data.senha() == null || data.senha().isEmpty()) {
             return ResponseEntity.badRequest().body("Por favor, forneça CPF e senha válidos.");
         }
@@ -38,10 +40,12 @@ public class AuthenticationController {
         var userNamePassword = new UsernamePasswordAuthenticationToken(data.cpf(), data.senha());
         var auth = this.authenticationManager.authenticate(userNamePassword);
 
+
         // Resto do código para lidar com a autenticação
         var token = tokenService.generateToken((Usuario) auth.getPrincipal());
 
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+
+        return ResponseEntity.ok(new LoginResponseDTO(token, data.cpf()));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")

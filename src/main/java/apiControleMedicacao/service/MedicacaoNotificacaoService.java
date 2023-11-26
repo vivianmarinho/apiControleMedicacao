@@ -27,6 +27,22 @@ public class MedicacaoNotificacaoService {
                 .orElseThrow(() -> new EntityNotFoundException("Medicação Notificacao não encontrada com o ID: " + id));
     }
 
+    public MedicacaoNotificacao deletarMedicacaoNotificacaoPorId(Long id) {
+        // Verifique se o ID não é nulo antes de realizar a exclusão
+        if (id == null) {
+            throw new IllegalArgumentException("O ID do usuário não pode ser nulo.");
+        }
+        Optional<MedicacaoNotificacao> medicacaoNotificacaoOptional = medicacaoNotificacaoRepository.findById(id);
+
+        if (medicacaoNotificacaoOptional.isPresent()) {
+
+            medicacaoNotificacaoRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException("Registro não encontrado com o ID: " + id);
+        }
+        return null;
+    }
+
 
     public record MedicacaoNotificacaoRequestDTO(String medicacaoTomada) {
     }

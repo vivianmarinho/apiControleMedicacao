@@ -2,6 +2,7 @@ package apiControleMedicacao.controller;
 
 import apiControleMedicacao.model.Medicacao;
 import apiControleMedicacao.model.MedicacaoNotificacao;
+import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.repository.MedicacaoNotificacaoRepository;
 import apiControleMedicacao.service.MedicacaoNotificacaoService;
 import apiControleMedicacao.service.MedicacaoService;
@@ -80,7 +81,19 @@ public class MedicacaoNotificacaoController {
             return ResponseEntity.ok("Escolha Sim recebida com sucesso"); // id da Pessoa
         } //else {
             //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Escolha inválida");
-        }
+
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<MedicacaoNotificacao> deletarMedicacaoNotificacaoPorId(@PathVariable Long id) {
+        medicacaoNotificacaoService.deletarMedicacaoNotificacaoPorId(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/buscarPorId/{id}")
+    public ResponseEntity<MedicacaoNotificacao>buscarUsuarioPorId(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(medicacaoNotificacaoService.buscarMedicacaoNotificacaoPorId(id));
+    }
+}
    // }
 //}
 

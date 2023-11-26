@@ -1,4 +1,4 @@
 package apiControleMedicacao.model;
 
-public record LoginResponseDTO(String token) {
+public record LoginResponseDTO(String token, String cpf) {
 }
