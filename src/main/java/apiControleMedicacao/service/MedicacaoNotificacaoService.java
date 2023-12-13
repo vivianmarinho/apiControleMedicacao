@@ -1,8 +1,7 @@
 package apiControleMedicacao.service;
 
-import apiControleMedicacao.model.Medicacao;
+
 import apiControleMedicacao.model.MedicacaoNotificacao;
-import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.repository.MedicacaoNotificacaoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

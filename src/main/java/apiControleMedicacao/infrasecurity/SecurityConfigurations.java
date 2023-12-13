@@ -21,10 +21,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-
-import java.util.Arrays;
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
@@ -64,7 +60,7 @@ public class SecurityConfigurations {
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilter() {
 
-        List<String> allowedOrigins = Arrays.asList("http://localhost:3002");
+        List<String> allowedOrigins = Arrays.asList("http://localhost:3000");
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedMethods(Arrays.asList("*"));

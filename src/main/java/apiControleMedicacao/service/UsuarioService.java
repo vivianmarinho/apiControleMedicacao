@@ -1,7 +1,9 @@
 package apiControleMedicacao.service;
 
+
 import apiControleMedicacao.model.Medicacao;
 import apiControleMedicacao.model.Usuario;
+import apiControleMedicacao.repository.MedicacaoRepository;
 import apiControleMedicacao.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +20,9 @@ import java.util.Optional;
 public class UsuarioService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    MedicacaoRepository medicacaoRepository;
 
     public Usuario adicionarUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
@@ -52,15 +57,43 @@ public class UsuarioService implements UserDetailsService {
         } else {
             throw new EntityNotFoundException("Pessoa não encontrada com o ID: " + id);
         }
+
+
     }
+
+    // Buscando por CPF
+
+    public Usuario buscarUsuarioPorCpf(String cpf) {
+
+        UserDetails usuarioOptional = usuarioRepository.findByCpf(cpf);
+
+        if(usuarioOptional == null){
+            System.out.println("Usuário não encontrado");
+        }
+
+
+        return (Usuario) usuarioOptional;
+    }
+
+
+
+    public List<UserDetails> buscarHistoricoUsuario(String cpf) {
+        List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findByCpf(cpf);
+        List<UserDetails> userDetailsList = new ArrayList<>();
+
+        for (Usuario usuario : usuarios) {
+            UserDetails userDetails = new Usuario(usuario);
+            userDetailsList.add(userDetails);
+        }
+
+        return userDetailsList;
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return usuarioRepository.findByCpf(username);
     }
 
-    // @Override
-   /* public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return usuarioRepository.findByUsuario(username);
-    }*/
+
 }

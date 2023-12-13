@@ -1,14 +1,18 @@
 package apiControleMedicacao.service;
 
 
+import apiControleMedicacao.infrasecurity.TokenService;
 import apiControleMedicacao.model.Medicacao;
 import apiControleMedicacao.model.MedicacaoNotificacao;
+import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.repository.MedicacaoNotificacaoRepository;
 import apiControleMedicacao.repository.MedicacaoRepository;
+import apiControleMedicacao.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,12 +31,15 @@ public class MedicacaoService {
 
     @Autowired
     private MedicacaoRepository medicacaoRepository;
-    @Autowired
-    private MedicamentoService medicamentoService;
 
     @Autowired
     private MedicacaoNotificacaoRepository medicacaoNotificacaoRepository;
 
+    @Autowired
+    TokenService tokenService;
+
+    @Autowired
+    UsuarioRepository usuarioRepository;
 
     @Autowired
     private UsuarioService usuarioService;
@@ -44,14 +51,11 @@ public class MedicacaoService {
     public Medicacao realizarRegistroMedicacao(Medicacao medicacao) {
 
 
-        medicacao.setUsuario(usuarioService.buscarUsuarioPorId(medicacao.getUsuario().getIdUsuario()));
-        medicacao.setMedicamento(medicamentoService.buscarMedicamentoPorId(medicacao.getMedicamento().getId()));
+        //medicacao.setUsuario(usuarioService.buscarUsuarioPorId(medicacao.getUsuario().getIdUsuario()));
+        // Ele está registrando pelo CPF
+        medicacao.setUsuario(usuarioService.buscarUsuarioPorCpf(medicacao.getUsuario().getCpf()));
 
         if (medicacao.getUsuario() == null) {
-            return null;
-        }
-
-        if (medicacao.getMedicamento() == null) {
             return null;
         }
 
@@ -69,6 +73,10 @@ public class MedicacaoService {
             System.out.println("O usuário deve informar a hora");
             return null;
         }
+        if (medicacao.getNomeMedicamento() == null) {
+            System.out.println("O usuário deve informar o nome do medicamento");
+            return null;
+        }
         LocalDateTime dataHoraUltimaDose = LocalDateTime.of(medicacao.getDataFim(), medicacao.getHoraInicio());
         LocalDateTime dataHoraPrimeiraDose = LocalDateTime.of(medicacao.getDataInicio(), medicacao.getHoraInicio());
         LocalDate data = LocalDate.of(medicacao.getDataInicio().getYear(), medicacao.getDataInicio().getMonth(), medicacao.getDataInicio().getDayOfMonth());
@@ -80,12 +88,14 @@ public class MedicacaoService {
             medicacao.setStatusPessoaMedicacao("CONSUMINDO");
         }*/
 
+
         medicacao = medicacaoRepository.save(medicacao);
 
         List<LocalDateTime> horarioGerado = geraHorarioNotificacao(dataHoraPrimeiraDose, medicacao);
 
 
         return medicacao;
+
     }
 
 
@@ -95,8 +105,9 @@ public class MedicacaoService {
     }
 
     private List<LocalDateTime> geraHorarioNotificacao(LocalDateTime dataHoraPrimeiraDose, Medicacao medicamento) {
+
+
         medicamento.setUsuario(usuarioService.buscarUsuarioPorId(medicamento.getUsuario().getIdUsuario()));
-        medicamento.setMedicamento(medicamentoService.buscarMedicamentoPorId(medicamento.getMedicamento().getId()));
 
         LocalDateTime dataHoraUltimodia = LocalDateTime.of(medicamento.getDataFim(), LocalTime.of(23, 59));
 
@@ -131,12 +142,10 @@ public class MedicacaoService {
                 medicacaoNotificacao.setStatusHoraMedicacao("Agendado");
             } else if (medicacaoNotificacao.getDiahoraNotificacao().isBefore(horario)) {
                 medicacaoNotificacao.setStatusHoraMedicacao("Consumido");
-            }
+            } //medicacaoNotificacao.getMedicacao();
 
             Medicacao medicacao = buscarMedicacaoPorId(medicamento.getIdMedicacao());
             medicacaoNotificacao.setMedicacao(medicacao);
-
-
 
             medicacaoNotificacaoRepository.save(medicacaoNotificacao);
 
@@ -151,7 +160,7 @@ public class MedicacaoService {
 
         timer.scheduleAtFixedRate(new TimerTask() {
             public static final String ACCOUNT_SID = "AC4e803c96c60b36d0ffcba0fce34c20ad";
-            public static final String AUTH_TOKEN = "37aa9896691afbf539f941e4249eb8c4";
+            public static final String AUTH_TOKEN = "01075a3fb7d60c2652e41248c28b44a7";
             // "1008d8d7ada9e77f5d337af3fd595c99";
 
             public void run() {
@@ -164,6 +173,7 @@ public class MedicacaoService {
                     if (horaAtual.equals(hora)) {
 
                         diminuirQuantidadeMedicamento(medicamento);
+                        //Medicacao medicacao = new Medicacao();
 
                         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
@@ -175,7 +185,7 @@ public class MedicacaoService {
                                         // new PhoneNumber("whatsapp:+5565996135666"),
                                         new PhoneNumber("whatsapp:+14155238886"),
 
-                                        medicamento.getUsuario().getNome() + " está na hora de tomar o remédio " + medicamento.getMedicamento().getMedicamentoNome() + " !" + "\n" +
+                                        medicamento.getUsuario().getNome() + " está na hora de tomar o remédio " + medicamento.getNomeMedicamento() + " !" + "\n" +
                                                 "Para confirmar que tomou a medicação, acesse o link a seguir:" + "\n")
 
                                 .create();
@@ -225,13 +235,13 @@ public class MedicacaoService {
         var mensagem = new SimpleMailMessage();
         mensagem.setTo(medicacao.getUsuario().getEmail());
         mensagem.setSubject("ATENÇÃO!");
-        mensagem.setText("A sua medicação está quase acabando, se necessario repor " + medicacao.getMedicamento().getMedicamentoNome() + "restam apenas " + medicacao.getQuantidade());
+        mensagem.setText("A sua medicação, " + medicacao.getNomeMedicamento() + ", está quase no fim. Restam apenas " + medicacao.getQuantidade() + " comprimidos.");
+
 
         mailSender.send(mensagem);
     }
 
     public Medicacao deletarMedicacaoPorId(Long id) {
-        // Verifique se o ID não é nulo antes de realizar a exclusão
         if (id == null) {
             throw new IllegalArgumentException("O ID do usuário não pode ser nulo.");
         }
@@ -247,16 +257,48 @@ public class MedicacaoService {
     }
 
     public Medicacao buscarMedicacaoPorId(Long id) {
+
         if (id == null) {
-            throw new IllegalArgumentException("O ID do usuário não pode ser nulo.");
+            throw new IllegalArgumentException("O ID da pessoa não pode ser nulo.");
         }
 
-        return medicacaoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Medicação não encontrada com o ID: " + id));
+        Optional<Medicacao> medicacaoOptional = medicacaoRepository.findById(id);
+
+        if (medicacaoOptional.isPresent()) {
+            return medicacaoOptional.get();
+        } else {
+            throw new EntityNotFoundException("Pessoa não encontrada com o ID: " + id);
+        }
+    }
+
+    //AJUSTAR O LISTAR MEDICACAO
+   public List<Medicacao> buscarHistoricoMedicacaoUsuario() {
+        return medicacaoRepository.findAll();
+    }
+
+    @Autowired
+    public MedicacaoService(MedicacaoRepository medicacaoRepository) {
+        this.medicacaoRepository = medicacaoRepository;
+    }
+
+    //Para realizar a Busca do historico por CPF
+
+    public List<Medicacao> buscarMedicacoesDoUsuarioAutenticado(String token) {
+        String cpfUsuario = tokenService.validateToken(token);
+
+        if (!cpfUsuario.isEmpty()) {
+            Usuario usuario = usuarioService.buscarUsuarioPorCpf(cpfUsuario);
+            return buscarMedicacoesPorUsuario(usuario);
+        } else {
+            // Lidar com o token inválido ou não autenticado
+            return Collections.emptyList(); // Ou outra lógica de erro/manipulação adequada
+        }
     }
 
 
-
+    public List<Medicacao> buscarMedicacoesPorUsuario(Usuario usuario) {
+        return medicacaoRepository.findByUsuario(usuario);
+    }
 
 }
 

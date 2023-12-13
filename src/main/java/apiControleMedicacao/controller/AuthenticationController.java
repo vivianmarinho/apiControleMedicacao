@@ -6,6 +6,7 @@ import apiControleMedicacao.model.LoginResponseDTO;
 import apiControleMedicacao.model.RegisterDTO;
 import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.repository.UsuarioRepository;
+import apiControleMedicacao.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,9 @@ public class AuthenticationController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    UsuarioService usuarioService;
 
 
     @Autowired
@@ -43,6 +47,11 @@ public class AuthenticationController {
 
         // Resto do código para lidar com a autenticação
         var token = tokenService.generateToken((Usuario) auth.getPrincipal());
+
+
+        //var user = usuarioService.buscarUsuarioPorCpf(data.cpf()) ;
+
+        //System.out.println(usuarioRepository.findByCpfPessoa(data.cpf()));
 
 
         return ResponseEntity.ok(new LoginResponseDTO(token, data.cpf()));

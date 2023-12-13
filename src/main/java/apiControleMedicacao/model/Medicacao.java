@@ -3,6 +3,7 @@ package apiControleMedicacao.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Table(name = "medicacao" ,schema = "public")
 @Entity(name = "medicacao")
@@ -27,22 +29,17 @@ public class Medicacao  implements Serializable{
     private long idMedicacao;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-   // @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = true)
-   // @JoinColumn(name = "usuario_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "medicamento_id", nullable = true)
-    private Medicamento medicamento;
-
-    //@JsonFormat(pattern = "dd-MM-yyy")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    //@JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "medicacao_data_inicio")
     private LocalDate dataInicio;
 
-    //@JsonFormat(pattern = "dd-MM-yyy")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    //@JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "medicacao_data_fim")
     private LocalDate dataFim;
 
@@ -56,6 +53,9 @@ public class Medicacao  implements Serializable{
     @DateTimeFormat(pattern = "HH:mm")
     @Column (name = "medicacao_intervalo")
     private LocalTime intervalo;
+
+    @Column(name = "medicacao_nome_medicamento")
+    private String nomeMedicamento;
 
 
 

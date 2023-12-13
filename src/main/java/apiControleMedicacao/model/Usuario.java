@@ -1,13 +1,13 @@
 package apiControleMedicacao.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 
 @Entity(name = "usuario")
@@ -28,6 +28,11 @@ public class Usuario  implements UserDetails{
     @Column(name = "usuario_id")
     private  Long idUsuario;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "medicacao_id", nullable = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Medicacao medicacao;
+
     @Column (name = "usuario_cpf")
     private String cpf;
     @Column (name = "usuario_nome")
@@ -39,12 +44,17 @@ public class Usuario  implements UserDetails{
     @Column (name = "usuario_senha")
     private String senha;
 
+
+
     public Usuario(String cpf,String senha, String nome, String email, String telefone){
         this.cpf=cpf;
         this.senha=senha;
         this.nome=nome;
         this.email=email;
         this.telefone=telefone;
+    }
+
+    public Usuario(Usuario usuario) {
     }
 
     @Override
@@ -83,7 +93,9 @@ public class Usuario  implements UserDetails{
     }
 
 
-    /// @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+
+
+    // @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     //private List<Medicacao> medicacaos;
 
 }
