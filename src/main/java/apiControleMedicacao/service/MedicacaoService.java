@@ -160,7 +160,7 @@ public class MedicacaoService {
 
         timer.scheduleAtFixedRate(new TimerTask() {
             public static final String ACCOUNT_SID = "AC4e803c96c60b36d0ffcba0fce34c20ad";
-            public static final String AUTH_TOKEN = "01075a3fb7d60c2652e41248c28b44a7";
+            public static final String AUTH_TOKEN = "";
             // "1008d8d7ada9e77f5d337af3fd595c99";
 
             public void run() {
