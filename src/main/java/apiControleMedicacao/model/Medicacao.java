@@ -33,12 +33,12 @@ public class Medicacao  implements Serializable{
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Usuario usuario;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     //@JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "medicacao_data_inicio")
     private LocalDate dataInicio;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     //@JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "medicacao_data_fim")
     private LocalDate dataFim;

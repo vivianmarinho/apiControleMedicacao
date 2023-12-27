@@ -13,20 +13,13 @@ import java.util.Optional;
 
 @Repository
 public interface MedicacaoRepository extends JpaRepository<Medicacao, Long> {
-   // @Query(value = "SELECT * FROM medicacao WHERE cpf = :cpf", nativeQuery = true)
-   // List<Medicacao> buscarPorUsuarioPorCpf(@Param("cpf") String cpf);
-
-    //List<Medicacao> findByUsuarioId(Long usuarioId);
-
-  //  @Query(value = "SELECT * FROM Medicacao WHERE usuario_id = :idUsuario", nativeQuery = true)
-  // List<Medicacao> findAllUsuarioId(@Param("idUsuario") Long idUsuario);
-
-    List<Medicacao> findByUsuario(Usuario usuario);
-
-
+      List<Medicacao> findByUsuario(Usuario usuario);
 
 
 
 
 }
+
+
+
 

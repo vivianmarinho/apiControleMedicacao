@@ -26,6 +26,7 @@ import com.twilio.type.PhoneNumber;
 
 
 
+
 @Service
 public class MedicacaoService {
 
@@ -160,7 +161,7 @@ public class MedicacaoService {
 
         timer.scheduleAtFixedRate(new TimerTask() {
             public static final String ACCOUNT_SID = "AC4e803c96c60b36d0ffcba0fce34c20ad";
-            public static final String AUTH_TOKEN = "";
+            public static final String AUTH_TOKEN = "01075a3fb7d60c2652e41248c28b44a7";
             // "1008d8d7ada9e77f5d337af3fd595c99";
 
             public void run() {
@@ -271,15 +272,32 @@ public class MedicacaoService {
         }
     }
 
-    //AJUSTAR O LISTAR MEDICACAO
-   public List<Medicacao> buscarHistoricoMedicacaoUsuario() {
-        return medicacaoRepository.findAll();
+    public void deletarMedicacaoDoUsuarioAutenticado(String token, Long idMedicacao) {
+        String cpfUsuario = tokenService.validateToken(token);
+
+        if (!cpfUsuario.isEmpty()) {
+            Usuario usuario = usuarioService.buscarUsuarioPorCpf(cpfUsuario);
+
+            List<Medicacao> medicacoesDoUsuario = medicacaoRepository.findByUsuario(usuario);
+
+            // Verificar se a medicação específica está presente na lista
+            Optional<Medicacao> medicacaoParaDeletar = medicacoesDoUsuario.stream()
+                    .filter(medicacao -> Long.valueOf(medicacao.getIdMedicacao()).equals(idMedicacao))
+                    .findFirst();
+
+            if (medicacaoParaDeletar.isPresent()) {
+                medicacaoRepository.delete(medicacaoParaDeletar.get());
+
+            } else {
+
+                throw new NoSuchElementException("Medicação não encontrada para o usuário especificado");
+            }
+        } else {
+
+            throw new RuntimeException("Token inválido ou não autenticado");
+        }
     }
 
-    @Autowired
-    public MedicacaoService(MedicacaoRepository medicacaoRepository) {
-        this.medicacaoRepository = medicacaoRepository;
-    }
 
     //Para realizar a Busca do historico por CPF
 
@@ -299,6 +317,13 @@ public class MedicacaoService {
     public List<Medicacao> buscarMedicacoesPorUsuario(Usuario usuario) {
         return medicacaoRepository.findByUsuario(usuario);
     }
+
+    public void deletarMedicacao(Long idMedicacao) {
+        medicacaoRepository.deleteById(idMedicacao);
+    }
+
+
+
 
 }
 
