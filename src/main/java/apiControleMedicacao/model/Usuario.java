@@ -28,10 +28,10 @@ public class Usuario  implements UserDetails{
     @Column(name = "usuario_id")
     private  Long idUsuario;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "medicacao_id", nullable = true)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Medicacao medicacao;
+   // @ManyToOne(fetch = FetchType.LAZY, optional = true)
+   // @JoinColumn(name = "medicacao_id", nullable = true)
+   // @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+   // private Medicacao medicacao;
 
     @Column (name = "usuario_cpf")
     private String cpf;

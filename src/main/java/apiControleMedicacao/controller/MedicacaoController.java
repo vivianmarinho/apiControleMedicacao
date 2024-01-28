@@ -77,11 +77,25 @@ public class MedicacaoController {
     ) {
         try {
             medicacaoService.deletarMedicacaoDoUsuarioAutenticado(token, id);
-            return ResponseEntity.ok().build();
+            return new ResponseEntity<>("Registro deletado com sucesso", HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> editarMedicacao(@RequestHeader("Authorization") String token,
+                                                  @PathVariable Long id,
+                                                  @RequestBody Medicacao novaMedicacao) {
+        try {
+            medicacaoService.editarMedicacaoDoUsuarioAutenticado(token, id, novaMedicacao);
+            return new ResponseEntity<>("Medicação editada com sucesso", HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("Medicação não encontrada", HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
 

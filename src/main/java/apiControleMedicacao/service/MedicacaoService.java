@@ -48,6 +48,11 @@ public class MedicacaoService {
     @Autowired
     private JavaMailSender mailSender;
 
+    public MedicacaoService(MedicacaoRepository medicacaoRepository, MedicacaoNotificacaoRepository medicacaoNotificacaoRepository) {
+        this.medicacaoRepository = medicacaoRepository;
+        this.medicacaoNotificacaoRepository = medicacaoNotificacaoRepository;
+    }
+
 
     public Medicacao realizarRegistroMedicacao(Medicacao medicacao) {
 
@@ -161,7 +166,7 @@ public class MedicacaoService {
 
         timer.scheduleAtFixedRate(new TimerTask() {
             public static final String ACCOUNT_SID = "AC4e803c96c60b36d0ffcba0fce34c20ad";
-            public static final String AUTH_TOKEN = "01075a3fb7d60c2652e41248c28b44a7";
+            public static final String AUTH_TOKEN = "";
             // "1008d8d7ada9e77f5d337af3fd595c99";
 
             public void run() {
@@ -178,8 +183,6 @@ public class MedicacaoService {
 
                         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
-
-                        String audioUrl = "apiControleMedicacao.audio.HoraDeTomarAMedicacao";
 
                         Message message = Message.creator(
                                         new PhoneNumber("whatsapp:+55" + medicamento.getUsuario().getTelefone()), // Número de telefone do destinatário
@@ -271,9 +274,10 @@ public class MedicacaoService {
             throw new EntityNotFoundException("Pessoa não encontrada com o ID: " + id);
         }
     }
-
-    public void deletarMedicacaoDoUsuarioAutenticado(String token, Long idMedicacao) {
+    public Long deletarMedicacaoDoUsuarioAutenticado(String token, Long idMedicacao) {
         String cpfUsuario = tokenService.validateToken(token);
+
+        buscarMedicacaoPorId(idMedicacao);
 
         if (!cpfUsuario.isEmpty()) {
             Usuario usuario = usuarioService.buscarUsuarioPorCpf(cpfUsuario);
@@ -286,7 +290,11 @@ public class MedicacaoService {
                     .findFirst();
 
             if (medicacaoParaDeletar.isPresent()) {
+
+                medicacaoNotificacaoRepository.deleteByMedicacao(medicacaoParaDeletar.get());
+
                 medicacaoRepository.delete(medicacaoParaDeletar.get());
+
 
             } else {
 
@@ -296,7 +304,47 @@ public class MedicacaoService {
 
             throw new RuntimeException("Token inválido ou não autenticado");
         }
+
+
+        return idMedicacao;
     }
+
+    public void editarMedicacaoDoUsuarioAutenticado(String token, Long idMedicacao, Medicacao novaMedicacao) {
+        String cpfUsuario = tokenService.validateToken(token);
+
+        if (!cpfUsuario.isEmpty()) {
+            Usuario usuario = usuarioService.buscarUsuarioPorCpf(cpfUsuario);
+
+            // Buscar a medicação específica do usuário
+            Optional<Medicacao> medicacaoParaEditarOpt = medicacaoRepository.findById(idMedicacao);
+
+            if (medicacaoParaEditarOpt.isPresent()) {
+                Medicacao medicacaoParaEditar = medicacaoParaEditarOpt.get();
+
+                // Verificar se a medicação pertence ao usuário autenticado
+                if (medicacaoParaEditar.getUsuario().equals(usuario)) {
+                    // Atualizar os campos da medicação com os valores da novaMedicacao
+                    medicacaoParaEditar.setNomeMedicamento(novaMedicacao.getNomeMedicamento());
+                    medicacaoParaEditar.setIntervalo(novaMedicacao.getIntervalo());
+                    medicacaoParaEditar.setQuantidade(novaMedicacao.getQuantidade());
+                    medicacaoParaEditar.setDataInicio(novaMedicacao.getDataInicio());
+                    medicacaoParaEditar.setDataFim(novaMedicacao.getDataFim());
+                    medicacaoParaEditar.setHoraInicio(novaMedicacao.getHoraInicio());
+
+                    // Salvar a medicação atualizada
+                    medicacaoRepository.save(medicacaoParaEditar);
+                } else {
+                    throw new RuntimeException("A medicação não pertence ao usuário autenticado");
+                }
+            } else {
+                throw new NoSuchElementException("Medicação não encontrada para o ID especificado");
+            }
+        } else {
+            throw new RuntimeException("Token inválido ou não autenticado");
+        }
+    }
+
+
 
 
     //Para realizar a Busca do historico por CPF
