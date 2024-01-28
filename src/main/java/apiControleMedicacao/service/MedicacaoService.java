@@ -186,7 +186,7 @@ public class MedicacaoService {
 
                         Message message = Message.creator(
                                         new PhoneNumber("whatsapp:+55" + medicamento.getUsuario().getTelefone()), // Número de telefone do destinatário
-                                        // new PhoneNumber("whatsapp:+5565996135666"),
+
                                         new PhoneNumber("whatsapp:+14155238886"),
 
                                         medicamento.getUsuario().getNome() + " está na hora de tomar o remédio " + medicamento.getNomeMedicamento() + " !" + "\n" +
