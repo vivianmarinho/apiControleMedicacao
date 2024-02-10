@@ -57,7 +57,4 @@ public class Medicacao  implements Serializable{
     @Column(name = "medicacao_nome_medicamento")
     private String nomeMedicamento;
 
-
-
-
 }

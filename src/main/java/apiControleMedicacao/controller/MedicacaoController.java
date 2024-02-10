@@ -38,12 +38,6 @@ public class MedicacaoController {
 
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Medicacao> deletarMedicacaoPorId(@PathVariable Long id) {
-        medicacaoService.deletarMedicacaoPorId(id);
-        return ResponseEntity.noContent().build();
-    }
-
    @GetMapping("/historico/medicacao")
     public ResponseEntity<List<Medicacao>> buscarMedicacoesDoUsuarioAutenticado(@RequestHeader("Authorization") String token) {
        System.out.println(token);
@@ -76,8 +70,11 @@ public class MedicacaoController {
             @PathVariable Long id
     ) {
         try {
-            medicacaoService.deletarMedicacaoDoUsuarioAutenticado(token, id);
-            return new ResponseEntity<>("Registro deletado com sucesso", HttpStatus.OK);
+            Long idDeletado = medicacaoService.deletarMedicacaoDoUsuarioAutenticado(token, id);
+            System.out.println(token);
+            System.out.println(idDeletado);
+
+            return new ResponseEntity<>("Registro deletado com sucesso. ID:" + idDeletado, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         } catch (RuntimeException e) {
@@ -85,12 +82,13 @@ public class MedicacaoController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("edit/{id}")
     public ResponseEntity<String> editarMedicacao(@RequestHeader("Authorization") String token,
                                                   @PathVariable Long id,
                                                   @RequestBody Medicacao novaMedicacao) {
         try {
             medicacaoService.editarMedicacaoDoUsuarioAutenticado(token, id, novaMedicacao);
+
             return new ResponseEntity<>("Medicação editada com sucesso", HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>("Medicação não encontrada", HttpStatus.NOT_FOUND);
@@ -98,14 +96,4 @@ public class MedicacaoController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
-
-
-
-
-
-
-
-
-
-
 }

@@ -45,14 +45,6 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/buscarPorId/{id}")
-    public ResponseEntity<Usuario> buscarUsuarioPorNome(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarUsuarioPorId(id));
-    }
-
-
-
-
     @GetMapping("/historico/{cpf}")
     public List<UserDetails> buscarHistoricoUsuario(@PathVariable String cpf) {
         return usuarioService.buscarHistoricoUsuario(cpf);

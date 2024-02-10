@@ -14,10 +14,6 @@ import java.util.Optional;
 @Repository
 public interface MedicacaoRepository extends JpaRepository<Medicacao, Long> {
       List<Medicacao> findByUsuario(Usuario usuario);
-
-
-
-
 }
 
 

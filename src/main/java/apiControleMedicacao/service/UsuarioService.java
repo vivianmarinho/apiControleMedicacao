@@ -1,7 +1,5 @@
 package apiControleMedicacao.service;
 
-
-import apiControleMedicacao.model.Medicacao;
 import apiControleMedicacao.model.Usuario;
 import apiControleMedicacao.repository.MedicacaoRepository;
 import apiControleMedicacao.repository.UsuarioRepository;
@@ -57,8 +55,6 @@ public class UsuarioService implements UserDetailsService {
         } else {
             throw new EntityNotFoundException("Pessoa não encontrada com o ID: " + id);
         }
-
-
     }
 
     // Buscando por CPF
@@ -74,9 +70,6 @@ public class UsuarioService implements UserDetailsService {
 
         return (Usuario) usuarioOptional;
     }
-
-
-
     public List<UserDetails> buscarHistoricoUsuario(String cpf) {
         List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findByCpf(cpf);
         List<UserDetails> userDetailsList = new ArrayList<>();

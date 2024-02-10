@@ -25,8 +25,6 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 
 
-
-
 @Service
 public class MedicacaoService {
 
@@ -56,8 +54,6 @@ public class MedicacaoService {
 
     public Medicacao realizarRegistroMedicacao(Medicacao medicacao) {
 
-
-        //medicacao.setUsuario(usuarioService.buscarUsuarioPorId(medicacao.getUsuario().getIdUsuario()));
         // Ele está registrando pelo CPF
         medicacao.setUsuario(usuarioService.buscarUsuarioPorCpf(medicacao.getUsuario().getCpf()));
 
@@ -88,13 +84,6 @@ public class MedicacaoService {
         LocalDate data = LocalDate.of(medicacao.getDataInicio().getYear(), medicacao.getDataInicio().getMonth(), medicacao.getDataInicio().getDayOfMonth());
         LocalDate dataFim = LocalDate.of(medicacao.getDataFim().getYear(), medicacao.getDataFim().getMonth(), medicacao.getDataFim().getDayOfMonth());
 
-        /*if (dataHoraPrimeiraDose.isAfter(LocalDateTime.now())) {
-            medicacao.setStatusUsuarioMedicacao("AGENDADO");
-        } else {
-            medicacao.setStatusPessoaMedicacao("CONSUMINDO");
-        }*/
-
-
         medicacao = medicacaoRepository.save(medicacao);
 
         List<LocalDateTime> horarioGerado = geraHorarioNotificacao(dataHoraPrimeiraDose, medicacao);
@@ -103,7 +92,6 @@ public class MedicacaoService {
         return medicacao;
 
     }
-
 
     // Inserindo os registros
     public Medicacao adicionarRegistroMedicacao(Medicacao medicacao) {
@@ -148,7 +136,7 @@ public class MedicacaoService {
                 medicacaoNotificacao.setStatusHoraMedicacao("Agendado");
             } else if (medicacaoNotificacao.getDiahoraNotificacao().isBefore(horario)) {
                 medicacaoNotificacao.setStatusHoraMedicacao("Consumido");
-            } //medicacaoNotificacao.getMedicacao();
+            }
 
             Medicacao medicacao = buscarMedicacaoPorId(medicamento.getIdMedicacao());
             medicacaoNotificacao.setMedicacao(medicacao);
@@ -156,10 +144,6 @@ public class MedicacaoService {
             medicacaoNotificacaoRepository.save(medicacaoNotificacao);
 
         }
-
-
-        // SALVANDO NA TABELA NOTIFICACAO
-
 
         Timer timer = new Timer();
 
@@ -186,7 +170,7 @@ public class MedicacaoService {
 
                         Message message = Message.creator(
                                         new PhoneNumber("whatsapp:+55" + medicamento.getUsuario().getTelefone()), // Número de telefone do destinatário
-
+                                        //new PhoneNumber("whatsapp:+556596135666"),
                                         new PhoneNumber("whatsapp:+14155238886"),
 
                                         medicamento.getUsuario().getNome() + " está na hora de tomar o remédio " + medicamento.getNomeMedicamento() + " !" + "\n" +
@@ -206,10 +190,7 @@ public class MedicacaoService {
 
         }, 60500, 60500);
 
-        //System.out.println(diaHorarioNotificacao);
         return diaHorarioNotificacao;
-
-
     }
 
     public Medicacao diminuirQuantidadeMedicamento(Medicacao medicacao) {
@@ -261,26 +242,24 @@ public class MedicacaoService {
     }
 
     public Medicacao buscarMedicacaoPorId(Long id) {
+        // Verifica se o ID é nulo
+        Objects.requireNonNull(id, "O ID da medicação não pode ser nulo.");
 
-        if (id == null) {
-            throw new IllegalArgumentException("O ID da pessoa não pode ser nulo.");
-        }
 
-        Optional<Medicacao> medicacaoOptional = medicacaoRepository.findById(id);
-
-        if (medicacaoOptional.isPresent()) {
-            return medicacaoOptional.get();
-        } else {
-            throw new EntityNotFoundException("Pessoa não encontrada com o ID: " + id);
-        }
+        return medicacaoRepository.findById(id)
+                // Retorna a medicação se encontrada, ou lança uma EntityNotFoundException se não encontrada
+                .orElseThrow(() -> new EntityNotFoundException("Medicação não encontrada com o ID: " + id));
     }
     public Long deletarMedicacaoDoUsuarioAutenticado(String token, Long idMedicacao) {
+
         String cpfUsuario = tokenService.validateToken(token);
 
         buscarMedicacaoPorId(idMedicacao);
 
+
         if (!cpfUsuario.isEmpty()) {
             Usuario usuario = usuarioService.buscarUsuarioPorCpf(cpfUsuario);
+
 
             List<Medicacao> medicacoesDoUsuario = medicacaoRepository.findByUsuario(usuario);
 
@@ -290,24 +269,20 @@ public class MedicacaoService {
                     .findFirst();
 
             if (medicacaoParaDeletar.isPresent()) {
+                Long idDeletado = medicacaoParaDeletar.get().getIdMedicacao(); // Captura o ID da medicação antes de deletá-la
 
                 medicacaoNotificacaoRepository.deleteByMedicacao(medicacaoParaDeletar.get());
-
                 medicacaoRepository.delete(medicacaoParaDeletar.get());
 
-
+                return idDeletado; // Retorna o ID da medicação deletada
             } else {
-
                 throw new NoSuchElementException("Medicação não encontrada para o usuário especificado");
             }
         } else {
-
             throw new RuntimeException("Token inválido ou não autenticado");
         }
-
-
-        return idMedicacao;
     }
+
 
     public void editarMedicacaoDoUsuarioAutenticado(String token, Long idMedicacao, Medicacao novaMedicacao) {
         String cpfUsuario = tokenService.validateToken(token);
@@ -343,10 +318,6 @@ public class MedicacaoService {
             throw new RuntimeException("Token inválido ou não autenticado");
         }
     }
-
-
-
-
     //Para realizar a Busca do historico por CPF
 
     public List<Medicacao> buscarMedicacoesDoUsuarioAutenticado(String token) {
@@ -361,7 +332,6 @@ public class MedicacaoService {
         }
     }
 
-
     public List<Medicacao> buscarMedicacoesPorUsuario(Usuario usuario) {
         return medicacaoRepository.findByUsuario(usuario);
     }
@@ -369,10 +339,6 @@ public class MedicacaoService {
     public void deletarMedicacao(Long idMedicacao) {
         medicacaoRepository.deleteById(idMedicacao);
     }
-
-
-
-
 }
 
 

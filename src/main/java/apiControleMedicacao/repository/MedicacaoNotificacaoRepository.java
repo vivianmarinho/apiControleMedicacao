@@ -14,7 +14,6 @@ import java.util.List;
 @Repository
 
 public interface MedicacaoNotificacaoRepository extends JpaRepository<MedicacaoNotificacao, Long> {
-
     @Transactional
     void deleteByMedicacao(Medicacao medicacao);
 }

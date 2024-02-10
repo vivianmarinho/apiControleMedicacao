@@ -23,15 +23,9 @@ public class Usuario  implements UserDetails{
 
     private static final long serialVersionUID = 1L;
 
-
     @Id @GeneratedValue (strategy = GenerationType.AUTO)
     @Column(name = "usuario_id")
     private  Long idUsuario;
-
-   // @ManyToOne(fetch = FetchType.LAZY, optional = true)
-   // @JoinColumn(name = "medicacao_id", nullable = true)
-   // @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-   // private Medicacao medicacao;
 
     @Column (name = "usuario_cpf")
     private String cpf;
@@ -43,8 +37,6 @@ public class Usuario  implements UserDetails{
     private String telefone;
     @Column (name = "usuario_senha")
     private String senha;
-
-
 
     public Usuario(String cpf,String senha, String nome, String email, String telefone){
         this.cpf=cpf;
@@ -91,11 +83,5 @@ public class Usuario  implements UserDetails{
     public boolean isEnabled() {
         return true;
     }
-
-
-
-
-    // @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    //private List<Medicacao> medicacaos;
 
 }

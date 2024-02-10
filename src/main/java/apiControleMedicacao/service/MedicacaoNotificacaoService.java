@@ -12,6 +12,12 @@ import java.util.Optional;
 @Service
 public class MedicacaoNotificacaoService {
 
+    @Autowired
+    private MedicacaoNotificacaoRepository medicacaoNotificacaoRepository;
+
+    @Autowired
+    private MedicacaoService medicacaoService;
+
     public MedicacaoNotificacao adicionarMedicacaoNotificacao(MedicacaoNotificacao medicacaoNotificacao) {
         return medicacaoNotificacaoRepository.save(medicacaoNotificacao);
 
@@ -45,14 +51,6 @@ public class MedicacaoNotificacaoService {
 
     public record MedicacaoNotificacaoRequestDTO(String medicacaoTomada) {
     }
-    @Autowired
-    private MedicacaoNotificacaoRepository medicacaoNotificacaoRepository;
-
-    @Autowired
-    private MedicacaoService medicacaoService;
-
-
-
 
 }
 

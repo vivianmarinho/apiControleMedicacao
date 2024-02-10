@@ -34,5 +34,4 @@ public class MedicacaoNotificacao  implements Serializable {
     @Column(name = "medicacao_tomada")
     private Boolean medicacaoTomada;
 
-
 }
